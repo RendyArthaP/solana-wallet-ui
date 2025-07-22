@@ -1,7 +1,4 @@
 import {
-  Adapter,
-  WalletAdapterNetwork,
-  WalletError,
   WalletName,
   WalletReadyState,
 } from '@solana/wallet-adapter-base';
