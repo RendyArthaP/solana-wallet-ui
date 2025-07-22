@@ -1,56 +1,93 @@
+import type { SupportedTransactionVersions } from '@solana/wallet-adapter-base';
 import {
-  WalletName,
-  WalletReadyState,
-} from '@solana/wallet-adapter-base';
-import {
-  PublicKey,
   Transaction,
   VersionedTransaction,
 } from '@solana/web3.js';
 
-export class OKXWalletAdapter {
-  name: WalletName = 'OKX' as WalletName;
-  url = 'https://www.okx.com/web3';
-  icon = 'https://static.okx.com/cdn/wallet/logo.png'; // bisa ganti
-  readyState = WalletReadyState.Installed;
+import {
+  BaseMessageSignerWalletAdapter,
+  WalletName,
+  WalletReadyState,
+  WalletAdapterNetwork,
+  WalletError,
+  TransactionOrVersionedTransaction
+} from '@solana/wallet-adapter-base';
+import { PublicKey, } from '@solana/web3.js';
+
+export class OKXWalletAdapter extends BaseMessageSignerWalletAdapter {
+  private _wallet: any; // OKX wallet object
+  private _connecting: boolean;
+
+  constructor() {
+    super();
+    this._wallet = (window as any)?.okxwallet?.solana;
+    this._connecting = false;
+  }
+
+  get name(): WalletName<string> {
+    return 'OKX' as WalletName<string>;
+  }
+
+  get url(): string {
+    return 'https://www.okx.com';
+  }
+
+  get icon(): string {
+    return 'https://static.okx.com/cdn/assets/imgs/221/61E3F1B2C6406.png';
+  }
+
+  get readyState(): WalletReadyState {
+    return this._wallet ? WalletReadyState.Installed : WalletReadyState.NotDetected;
+  }
 
   get publicKey(): PublicKey | null {
-    return this._publicKey || null;
+    return this._wallet?.publicKey || null;
   }
 
-  get connected(): boolean {
-    return !!this._publicKey;
+  get connecting(): boolean {
+    return this._connecting;
   }
 
-  private _publicKey: PublicKey | null = null;
+  get supportedTransactionVersions(): Set<'legacy'> {
+    return new Set<'legacy'>(['legacy']);
+  }
 
   async connect(): Promise<void> {
-    const provider = (window as any).okx?.solana;
-    if (!provider) throw new Error('OKX Wallet not installed');
-    const resp = await provider.connect();
-    this._publicKey = new PublicKey(resp.publicKey);
+  this._connecting = true;
+  try {
+    await this._wallet.connect();
+
+    if (this.publicKey) {
+      this.emit('connect', this.publicKey);
+    } else {
+      throw new Error('Wallet connected but publicKey is null');
+    }
+  } catch (error) {
+    this.emit('error', error as WalletError);
+    throw error;
+  } finally {
+    this._connecting = false;
   }
+}
+
 
   async disconnect(): Promise<void> {
-    const provider = (window as any).okx?.solana;
-    if (!provider) return;
-    await provider.disconnect();
-    this._publicKey = null;
+    await this._wallet.disconnect();
+    this.emit('disconnect');
   }
 
-  async signTransaction(
-    tx: Transaction | VersionedTransaction
-  ): Promise<Transaction | VersionedTransaction> {
-    const provider = (window as any).okx?.solana;
-    if (!provider) throw new Error('OKX Wallet not available');
-    return await provider.signTransaction(tx);
-  }
+  async signTransaction<T extends Transaction | VersionedTransaction>(transaction: T): Promise<T> {
+  return await this._wallet.signTransaction(transaction) as T;
+}
 
-  async signAllTransactions(
-    txs: (Transaction | VersionedTransaction)[]
-  ): Promise<(Transaction | VersionedTransaction)[]> {
-    const provider = (window as any).okx?.solana;
-    if (!provider) throw new Error('OKX Wallet not available');
-    return await provider.signAllTransactions(txs);
+async signAllTransactions<T extends Transaction | VersionedTransaction>(
+  transactions: T[]
+): Promise<T[]> {
+  return await this._wallet.signAllTransactions(transactions) as T[];
+}
+
+
+  async signMessage(message: Uint8Array): Promise<Uint8Array> {
+    return await this._wallet.signMessage(message);
   }
 }
