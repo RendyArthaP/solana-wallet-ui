@@ -2,10 +2,8 @@ import React from 'react';
 import './App.css';
 import { SolanaWalletProvider } from './context/SolanaWalletProvider';
 import { ConnectWalletButton } from './components/ConnectWalletButton';
-import { useWallet } from '@solana/wallet-adapter-react';
 
 function App() {
-  const data = useWallet()
 
   return (
     <SolanaWalletProvider>
