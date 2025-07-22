@@ -5,15 +5,17 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { BackpackWalletAdapter } from '@solana/wallet-adapter-backpack';
+import { OKXWalletAdapter } from '../libs/okx-wallet-adapters';
 
 const endpoint = process.env.REACT_APP_SOLANA_RPC_ENDPOINT || '';
 
 export const SolanaWalletProvider = ({ children }: { children: React.ReactNode }) => {
-  const wallets = useMemo(
+  const wallets: any[] = useMemo(
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
       new BackpackWalletAdapter(),
+      new OKXWalletAdapter()
     ],
     []
   );
