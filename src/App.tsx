@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import { SolanaWalletProvider } from './context/SolanaWalletProvider';
 import { ConnectWalletButton } from './components/ConnectWalletButton';
-import { useOKXWallet } from './hooks/useOKXWallet';
 
 function App() {
   return (
