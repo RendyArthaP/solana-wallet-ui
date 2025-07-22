@@ -1,4 +1,3 @@
-import type { SupportedTransactionVersions } from '@solana/wallet-adapter-base';
 import {
   Transaction,
   VersionedTransaction,
@@ -8,9 +7,7 @@ import {
   BaseMessageSignerWalletAdapter,
   WalletName,
   WalletReadyState,
-  WalletAdapterNetwork,
   WalletError,
-  TransactionOrVersionedTransaction
 } from '@solana/wallet-adapter-base';
 import { PublicKey, } from '@solana/web3.js';
 
