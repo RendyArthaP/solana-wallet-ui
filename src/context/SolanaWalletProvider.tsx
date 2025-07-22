@@ -6,7 +6,7 @@ import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 import { SolflareWalletAdapter } from '@solana/wallet-adapter-solflare';
 import { BackpackWalletAdapter } from '@solana/wallet-adapter-backpack';
 
-const endpoint = 'https://api.mainnet-beta.solana.com';
+const endpoint = process.env.REACT_APP_SOLANA_RPC_ENDPOINT || '';
 
 export const SolanaWalletProvider = ({ children }: { children: React.ReactNode }) => {
   const wallets = useMemo(
