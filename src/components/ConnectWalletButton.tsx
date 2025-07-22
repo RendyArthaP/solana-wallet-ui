@@ -7,7 +7,7 @@ export const ConnectWalletButton = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 20 }}>
-      <WalletMultiButton />
+      <WalletMultiButton key='sol-button'/>
       {publicKey && (
         <div style={{ marginTop: 10 }}>
           Connected: {publicKey.toBase58()}
